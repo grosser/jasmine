@@ -1167,6 +1167,18 @@ describe("jasmine spec running", function () {
       expect(xitSpecWasRun).toEqual(false);
     });
 
+    it('should take note of pending specs', function(){
+      jasmine.Env.pendingSpecs.length = 0;
+
+      var suite = env.describe('my suite', function() {
+        env.xit('disabled spec', function(){});
+        env.xit('disabled spec 2', function(){});
+      });
+
+      suite.execute();
+      expect(jasmine.Env.pendingSpecs).toEqual(['my suite disabled spec', 'my suite disabled spec 2']);
+    });
+
     it('should not execute specs in pending suites', function() {
       var spy = jasmine.createSpy();
       var disabledSuite = env.xdescribe('a disabled suite', function() {
@@ -1178,6 +1190,18 @@ describe("jasmine spec running", function () {
       disabledSuite.execute();
 
       expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should take note of pending suites', function(){
+      jasmine.Env.pendingSpecs.length = 0;
+
+      var suite = env.xdescribe('my suite', function() {
+        env.it('disabled spec', function(){});
+        env.it('disabled spec 2', function(){});
+      });
+
+      suite.execute();
+      expect(jasmine.Env.pendingSpecs).toEqual(['my suite']);
     });
   });
 

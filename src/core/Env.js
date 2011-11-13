@@ -142,6 +142,7 @@ jasmine.Env.prototype.afterEach = function(afterEachFunction) {
 };
 
 jasmine.Env.prototype.xdescribe = function(desc, specDefinitions) {
+  jasmine.Env.pendingSpecs.push(desc);
   return {
     execute: function() {
     }
@@ -160,7 +161,11 @@ jasmine.Env.prototype.it = function(description, func) {
   return spec;
 };
 
+jasmine.Env.pendingSpecs = [];
 jasmine.Env.prototype.xit = function(desc, func) {
+  var fullName = this.currentSuite.description + ' ' + desc;
+  jasmine.Env.pendingSpecs.push(fullName)
+
   return {
     id: this.nextSpecId(),
     runs: function() {
