@@ -1149,34 +1149,36 @@ describe("jasmine spec running", function () {
     expect(suiteResults.getItems()[0].getItems()[1].passed()).toEqual(true);
   });
 
-  it("shouldn't run disabled tests", function() {
-    var xitSpecWasRun = false;
-    var suite = env.describe('default current suite', function() {
-      env.xit('disabled spec').runs(function () {
-        xitSpecWasRun = true;
+  describe('pending specs', function(){
+    it("should not run pending specs", function() {
+      var xitSpecWasRun = false;
+      var suite = env.describe('default current suite', function() {
+        env.xit('disabled spec').runs(function () {
+          xitSpecWasRun = true;
+        });
+
+        env.it('enabled spec').runs(function () {
+          var foo = 'bar';
+          expect(foo).toEqual('bar');
+        });
       });
 
-      env.it('enabled spec').runs(function () {
-        var foo = 'bar';
-        expect(foo).toEqual('bar');
-      });
+      suite.execute();
+      expect(xitSpecWasRun).toEqual(false);
     });
 
-    suite.execute();
-    expect(xitSpecWasRun).toEqual(false);
-  });
-
-  it('shouldn\'t execute specs in disabled suites', function() {
-    var spy = jasmine.createSpy();
-    var disabledSuite = env.xdescribe('a disabled suite', function() {
-      env.it('enabled spec, but should not be run', function() {
-        spy();
+    it('should not execute specs in pending suites', function() {
+      var spy = jasmine.createSpy();
+      var disabledSuite = env.xdescribe('a disabled suite', function() {
+        env.it('enabled spec, but should not be run', function() {
+          spy();
+        });
       });
+
+      disabledSuite.execute();
+
+      expect(spy).not.toHaveBeenCalled();
     });
-
-    disabledSuite.execute();
-
-    expect(spy).not.toHaveBeenCalled();
   });
 
   it('#explodes should throw an exception when it is called inside a spec', function() {
